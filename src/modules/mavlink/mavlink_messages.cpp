@@ -96,6 +96,7 @@
 #include <uORB/topics/wind_estimate.h>
 #include <uORB/topics/mount_orientation.h>
 #include <uORB/topics/collision_report.h>
+#include <uORB/topics/sel_solar_plane.h>
 #include <uORB/uORB.h>
 
 
@@ -4280,6 +4281,80 @@ protected:
 	}
 };
 
+class MavlinkStreamSelSolarPlane : public MavlinkStream
+{
+public:
+    const char *get_name() const
+    {
+        return MavlinkStreamSelSolarPlane::get_name_static();
+    }
+
+    static const char *get_name_static()
+    {
+        return "SEL_SOLAR_PLANE";
+    }
+
+    static uint16_t get_id_static()
+    {
+        return MAVLINK_MSG_ID_SEL_SOLAR_PLANE;
+    }
+
+    uint16_t get_id()
+    {
+        return get_id_static();
+    }
+
+    static MavlinkStream *new_instance(Mavlink *mavlink)
+    {
+        return new MavlinkStreamSelSolarPlane(mavlink);
+    }
+
+    unsigned get_size()
+    {
+        return (_sel_time > 0) ? MAVLINK_MSG_ID_SEL_SOLAR_PLANE_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES : 0;
+    }
+
+private:
+    MavlinkOrbSubscription *_sel_sub;
+    uint64_t _sel_time;
+
+    /* do not allow top copying this class */
+    MavlinkStreamSelSolarPlane(MavlinkStreamSelSolarPlane &);
+    MavlinkStreamSelSolarPlane &operator = (const MavlinkStreamSelSolarPlane &);
+
+protected:
+    explicit MavlinkStreamSelSolarPlane(Mavlink *mavlink) : MavlinkStream(mavlink),
+        _sel_sub(_mavlink->add_orb_subscription(ORB_ID(sel_solar_plane))),
+        _sel_time(0)
+    {}
+
+    bool send(const hrt_abstime t)
+    {
+        struct sel_solar_plane_s sel = {};
+
+        if (_sel_sub->update(&_sel_time, &sel)) {
+            mavlink_sel_solar_plane_t msg = {};
+
+            msg.timestamp= sel.timestamp;
+            msg.sel_bat_generating_capacity = sel.sel_bat_generating_capacity;
+            msg.sel_load_side_current_value = sel.sel_load_side_current_value;
+            msg.sel_load_side_voltage_value = sel.sel_load_side_voltage_value;
+            msg.sel_solar_cell_module_1_voltage = sel.sel_solar_cell_module_1_voltage;
+            msg.sel_solar_cell_module_2_voltage = sel.sel_solar_cell_module_2_voltage;
+            msg.sel_solar_cell_module_3_voltage = sel.sel_solar_cell_module_3_voltage;
+            msg.sel_solar_cell_module_1_current = sel.sel_solar_cell_module_1_current;
+            msg.sel_solar_cell_module_2_current = sel.sel_solar_cell_module_2_current;
+            msg.sel_solar_cell_module_3_current = sel.sel_solar_cell_module_3_current;
+            PX4_INFO("Hello sel");
+            mavlink_msg_sel_solar_plane_send_struct(_mavlink->get_channel(), &msg);
+
+            return true;
+        }
+
+        return false;
+    }
+};
+
 const StreamListItem *streams_list[] = {
 	new StreamListItem(&MavlinkStreamHeartbeat::new_instance, &MavlinkStreamHeartbeat::get_name_static, &MavlinkStreamHeartbeat::get_id_static),
 	new StreamListItem(&MavlinkStreamStatustext::new_instance, &MavlinkStreamStatustext::get_name_static, &MavlinkStreamStatustext::get_id_static),
@@ -4331,5 +4406,6 @@ const StreamListItem *streams_list[] = {
 	new StreamListItem(&MavlinkStreamMountOrientation::new_instance, &MavlinkStreamMountOrientation::get_name_static, &MavlinkStreamMountOrientation::get_id_static),
 	new StreamListItem(&MavlinkStreamHighLatency::new_instance, &MavlinkStreamHighLatency::get_name_static, &MavlinkStreamWind::get_id_static),
 	new StreamListItem(&MavlinkStreamGroundTruth::new_instance, &MavlinkStreamGroundTruth::get_name_static, &MavlinkStreamGroundTruth::get_id_static),
-	nullptr
+    new StreamListItem(&MavlinkStreamSelSolarPlane::new_instance, &MavlinkStreamSelSolarPlane::get_name_static, &MavlinkStreamSelSolarPlane::get_id_static),
+    nullptr
 };
