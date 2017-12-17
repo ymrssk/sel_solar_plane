@@ -1,0 +1,10 @@
+float32 sel_bat_generating_capacity	#発電量:W
+float32 sel_load_side_current_value	#負荷側電流値:mA
+float32 sel_load_side_voltage_value	#負荷側電圧値:V
+float32 sel_solar_cell_module_1_voltage	#太陽電池モジュール1電圧
+float32 sel_solar_cell_module_2_voltage	#太陽電池モジュール2電圧
+float32 sel_solar_cell_module_3_voltage	#太陽電池モジュール3電圧
+float32 sel_solar_cell_module_1_current	#太陽電池モジュール1電流
+float32 sel_solar_cell_module_2_current	#太陽電池モジュール2電流
+float32 sel_solar_cell_module_3_current	#太陽電池モジュール3電流
+
