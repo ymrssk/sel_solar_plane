@@ -2044,7 +2044,8 @@ Mavlink::task_main(int argc, char *argv[])
 		configure_stream("NAMED_VALUE_FLOAT", 1.0f);
 		configure_stream("DEBUG", 1.0f);
 		configure_stream("DEBUG_VECT", 1.0f);
-		configure_stream("VFR_HUD", 4.0f);
+        configure_stream("SEL_SOLAR_PLANE", 1.0f);
+        configure_stream("VFR_HUD", 4.0f);
 		configure_stream("WIND_COV", 1.0f);
 		configure_stream("CAMERA_IMAGE_CAPTURED");
 		break;
@@ -2074,6 +2075,7 @@ Mavlink::task_main(int argc, char *argv[])
 		configure_stream("NAMED_VALUE_FLOAT", 10.0f);
 		configure_stream("DEBUG", 10.0f);
 		configure_stream("DEBUG_VECT", 10.0f);
+        configure_stream("SEL_SOLAR_PLANE", 1.0f);
 		configure_stream("VFR_HUD", 10.0f);
 		configure_stream("WIND_COV", 10.0f);
 		configure_stream("POSITION_TARGET_LOCAL_NED", 10.0f);
@@ -2135,6 +2137,7 @@ Mavlink::task_main(int argc, char *argv[])
 		configure_stream("NAMED_VALUE_FLOAT", 50.0f);
 		configure_stream("DEBUG", 50.0f);
 		configure_stream("DEBUG_VECT", 50.0f);
+        configure_stream("SEL_SOLAR_PLANE", 1.0f);
 		configure_stream("VFR_HUD", 20.0f);
 		configure_stream("WIND_COV", 10.0f);
 		configure_stream("CAMERA_TRIGGER");
@@ -2178,7 +2181,7 @@ Mavlink::task_main(int argc, char *argv[])
 	}
 
 	/* start the MAVLink receiver last to avoid a race */
-	MavlinkReceiver::receive_start(&_receive_thread, this);
+    MavlinkReceiver::receive_start(&_receive_thread, this);
 
 	while (!_task_should_exit) {
 		/* main loop */
@@ -2293,7 +2296,7 @@ Mavlink::task_main(int argc, char *argv[])
 				if (get_protocol() == SERIAL) {
 					PX4_WARN("stream %s on device %s not found", _subscribe_to_stream, _device_name);
 
-				} else if (get_protocol() == UDP) {
+                } else if (get_protocol() == UDP) {
 					PX4_WARN("stream %s on UDP port %d not found", _subscribe_to_stream, _network_port);
 				}
 			}
@@ -2314,7 +2317,7 @@ Mavlink::task_main(int argc, char *argv[])
 			uint8_t *read_ptr;
 			uint8_t *write_ptr;
 
-			pthread_mutex_lock(&_message_buffer_mutex);
+            pthread_mutex_lock(&_message_buffer_mutex);
 			int available = message_buffer_get_ptr((void **)&read_ptr, &is_part);
 			pthread_mutex_unlock(&_message_buffer_mutex);
 
@@ -2335,7 +2338,7 @@ Mavlink::task_main(int argc, char *argv[])
 
 				// We hold the mutex until after we complete the second part of the buffer. If we don't
 				// we may end up breaking the empty slot overflow detection semantics when we mark the
-				// possibly partial read below.
+                // possibly partial read below.
 				pthread_mutex_lock(&_message_buffer_mutex);
 
 				message_buffer_mark_read(read_count);

@@ -25,39 +25,44 @@ int px4_simple_app_main(int argc, char *argv[])
 {
    PX4_INFO("Hello Sky!");
 
-    struct sel_solar_plane_s sel;
-    memset(&sel, 0, sizeof(sel));
-/*
-    orb_advert_t sel_pub = orb_advertise(ORB_ID(sel_solar_plane), &sel);
-    sel.timestamp = hrt_absolute_time();
-    sel.sel_bat_generating_capacity = 100.0;
-    sel.sel_load_side_current_value = 100.0;
-    sel.sel_load_side_voltage_value = 100.0;
-    sel.sel_solar_cell_module_1_voltage = 100.0;
-    sel.sel_solar_cell_module_2_voltage = 100.0;
-    sel.sel_solar_cell_module_3_voltage = 100.0;
-    sel.sel_solar_cell_module_1_current = 100.0;
-    sel.sel_solar_cell_module_2_current = 100.0;
-    sel.sel_solar_cell_module_3_current = 100.0;
-    orb_publish(ORB_ID(sel_solar_plane), sel_pub, &sel);
-*/
+    struct sel_solar_plane_s ssp;
+    memset(&ssp, 0, sizeof(ssp));
+    for(int j= 0;j<10;j++){
+    orb_advert_t sel_pub = orb_advertise(ORB_ID(sel_solar_plane), &ssp);
+    ssp.timestamp = hrt_absolute_time();
+    ssp.battery_voltage  = 10.0;
+    ssp.battery_current = 10.0;
+    ssp.battery_power  = 10.0;
+    ssp.battery_remaining = 10.0;
+    ssp.sap_voltage  = 10.0;
+    ssp.sap_current = 10.0;
+    ssp.sap_power  = 10.0;
+    ssp.sap_str1_voltage = 10.0;
+    ssp.sap_str1_current  = 10.0;
+    ssp.sap_str1_power = 10.0;
+    ssp.sap_str2_voltage = 10.0;
+    ssp.sap_str2_current  = 10.0;
+    ssp.sap_str2_power = 10.0;
+    ssp.sap_str3_voltage = 10.0;
+    ssp.sap_str3_current  = 10.0;
+    ssp.sap_str3_power = 10.0;
+    ssp.load_current = 10.0;
+    ssp.load_voltage = 10.0;
+    ssp.load_power  = 10.0;
+    ssp.component_status = 10.0;
+    orb_publish(ORB_ID(sel_solar_plane), sel_pub, &ssp);
+    sleep(1000000);
+    }
 
-    /* subscribe to sensor_combined topic */
+/*
     int sensor_sub_fd = orb_subscribe(ORB_ID(vehicle_attitude));
-    /* limit the update rate to 5 Hz */
     px4_pollfd_struct_t fds[] = {
         { .fd = sensor_sub_fd,   .events = POLLIN },
-        /* there could be more file descriptors here, in the form like:
-         * { .fd = other_sub_fd,   .events = POLLIN },
-         */
     };
     orb_set_interval(sensor_sub_fd, 10);
-    /* copy sensors raw data into local buffer */
-    //struct vehicle_attitude_setpoint_s att_set;
-    //struct manual_control_setpoint_s mcs;
+
     struct rc_input_values rc = {};
-    //orb_advert_t att_set_pub = orb_advertise(ORB_ID(vehicle_attitude_setpoint), &att_set);
-    //orb_advert_t mcs_pub = orb_advertise(ORB_ID(manual_control_setpoint), &mcs);
+
     orb_advert_t _rc_pub = orb_advertise(ORB_ID(input_rc), &rc);
 
 
@@ -65,15 +70,11 @@ int px4_simple_app_main(int argc, char *argv[])
         int poll_ret = px4_poll(fds, 1, 100);
         int error_counter = 0;
 
-        /* handle the poll result */
         if (poll_ret == 0) {
-            /* this means none of our providers is giving us data */
             PX4_ERR("Got no data within");
 
         } else if (poll_ret < 0) {
-            /* this is seriously bad - should be an emergency */
             if (error_counter < 10 || error_counter % 50 == 0) {
-                /* use a counter to prevent flooding (and slowing us down) */
                 PX4_ERR("ERROR return value from poll(): %d", poll_ret);
             }
 
@@ -104,7 +105,6 @@ int px4_simple_app_main(int argc, char *argv[])
 
     rc.rssi = RC_INPUT_RSSI_MAX;
 
-    /* channels */
     rc.values[0] = j;
 
     rc.values[1] = j;
@@ -123,22 +123,11 @@ int px4_simple_app_main(int argc, char *argv[])
     orb_publish(ORB_ID(input_rc), _rc_pub, &rc);
     orb_copy(ORB_ID(vehicle_attitude), sensor_sub_fd, &att);
     //euler = matrix::Quatf(att.q);
-    //att_set.timestamp = hrt_absolute_time();
-
-    //att_set.roll_body = -10.0f;
-    //att_set.pitch_body = 0.0;
-    //att_set.yaw_body = 0.0;
-    //mcs.x = -1.0;
-    //mcs.y = 0.0f;
-    //mcs.z = 0.0;
-    /* copy sensors raw data into local buffer */
-    //orb_publish(ORB_ID(vehicle_attitude_setpoint), att_set_pub, &att_set);
-    //orb_publish(ORB_ID(manual_control_setpoint), mcs_pub, &mcs);
 
     PX4_INFO("roll\t%8.4f\t%8.4f\t%8.4f\t%8.4f",(double)att.q[0],(double)att.q[1],(double)att.q[2],(double)att.q[3]);
 }
 }
-}
+}*/
     PX4_INFO("exiting");
     return 0;
 }

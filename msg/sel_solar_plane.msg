@@ -7,7 +7,7 @@ float32 sap_current		#全体発生電流:A
 float32 sap_power		#全体発生電力:W
 float32 sap_str1_voltage	#太陽電池モジュール1電圧:V
 float32 sap_str1_current	#太陽電池モジュール1電流:A
-float32 sap_str_1_power		#太陽電池モジュール1電力:W
+float32 sap_str1_power		#太陽電池モジュール1電力:W
 float32 sap_str2_voltage	#太陽電池モジュール2電圧:V
 float32 sap_str2_current	#太陽電池モジュール2電流:A
 float32 sap_str2_power		#太陽電池モジュール2電力:W

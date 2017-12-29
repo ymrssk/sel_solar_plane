@@ -334,6 +334,9 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 	case MAVLINK_MSG_ID_DEBUG_VECT:
 		handle_message_debug_vect(msg);
 		break;
+    case MAVLINK_MSG_ID_SEL_SOLAR_PLANE:
+        handle_message_sel_solar_plane(msg);
+        break;
 
 	default:
 		break;
@@ -2318,6 +2321,42 @@ void MavlinkReceiver::handle_message_debug_vect(mavlink_message_t *msg)
 	}
 }
 
+void MavlinkReceiver::handle_message_sel_solar_plane(mavlink_message_t *msg)
+{
+    mavlink_sel_solar_plane_t _sel_solar_plane;
+    sel_solar_plane_s ssp = {}; //ssp sel solar plane
+
+    mavlink_msg_sel_solar_plane_decode(msg, &_sel_solar_plane);
+
+    ssp.timestamp = hrt_absolute_time();
+    ssp.battery_voltage  = _sel_solar_plane.battery_voltage;
+    ssp.battery_current = _sel_solar_plane.battery_current;
+    ssp.battery_power  = _sel_solar_plane.battery_power;
+    ssp.battery_remaining = _sel_solar_plane.battery_remaining;
+    ssp.sap_voltage  = _sel_solar_plane.sap_voltage;
+    ssp.sap_current = _sel_solar_plane.sap_current;
+    ssp.sap_power  = _sel_solar_plane.sap_power;
+    ssp.sap_str1_voltage = _sel_solar_plane.sap_str1_voltage;
+    ssp.sap_str1_current  = _sel_solar_plane.sap_str1_current;
+    ssp.sap_str1_power = _sel_solar_plane.sap_str1_power;
+    ssp.sap_str2_voltage = _sel_solar_plane.sap_str2_voltage;
+    ssp.sap_str2_current  = _sel_solar_plane.sap_str2_current;
+    ssp.sap_str2_power = _sel_solar_plane.sap_str2_power;
+    ssp.sap_str3_voltage = _sel_solar_plane.sap_str3_voltage;
+    ssp.sap_str3_current  = _sel_solar_plane.sap_str3_current;
+    ssp.sap_str3_power = _sel_solar_plane.sap_str3_power;
+    ssp.load_current = _sel_solar_plane.load_current;
+    ssp.load_voltage = _sel_solar_plane.load_voltage;
+    ssp.load_power  = _sel_solar_plane.load_power;
+    ssp.component_status = _sel_solar_plane.component_status;
+
+    if (_sel_solar_plane_pub == nullptr) {
+        _sel_solar_plane_pub = orb_advertise(ORB_ID(sel_solar_plane), &_sel_solar_plane);
+
+    } else {
+        orb_publish(ORB_ID(sel_solar_plane), _sel_solar_plane_pub, &ssp);
+    }
+}
 /**
  * Receive data from UART.
  */
