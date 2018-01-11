@@ -136,6 +136,7 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_debug_key_value_pub(nullptr),
 	_debug_value_pub(nullptr),
 	_debug_vect_pub(nullptr),
+    _sel_solar_plane_pub(nullptr),
 	_gps_inject_data_pub(nullptr),
 	_command_ack_pub(nullptr),
 	_control_mode_sub(orb_subscribe(ORB_ID(vehicle_control_mode))),
@@ -2349,6 +2350,7 @@ void MavlinkReceiver::handle_message_sel_solar_plane(mavlink_message_t *msg)
     ssp.load_voltage = _sel_solar_plane.load_voltage;
     ssp.load_power  = _sel_solar_plane.load_power;
     ssp.component_status = _sel_solar_plane.component_status;
+    PX4_INFO("aaa");
 
     if (_sel_solar_plane_pub == nullptr) {
         _sel_solar_plane_pub = orb_advertise(ORB_ID(sel_solar_plane), &_sel_solar_plane);
